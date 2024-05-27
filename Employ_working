@@ -1,0 +1,197 @@
+package com.EmployDatabaseManagementSystem;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class Employ {
+	
+	static Scanner sc = new Scanner(System.in);
+	
+	public static Connection getConnection(){
+		
+		String url = "jdbc:postgresql://localhost:5432/employ?user=postgres&password=root";
+		
+		Connection c = null;
+		try {
+			c = DriverManager.getConnection(url);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return c;
+		
+	}
+	
+	public static void addEmploye() {
+		
+		System.out.println("Enter the ID: ");
+		int id = sc.nextInt();
+		
+		System.out.println("Enter the Name: ");
+		String name = sc.next();
+		
+		System.out.println("Enter the Salary: ");
+		int salary = sc.nextInt();
+		
+		Connection c = getConnection();
+		
+		String sql = "INSERT into emp VALUES(?,?,?)";
+		
+		try {
+			PreparedStatement ps = c.prepareStatement(sql);
+			ps.setInt(1, id);
+			ps.setString(2, name);
+			ps.setInt(3, salary);
+			ps.execute();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				c.close();
+				System.out.println("Employe added successfully");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+}
+
+	public static void updateEmploye() {
+		
+		System.out.println("Press a to Update Name of Employe");
+		System.out.println("Press b to Update Salary of Employe");
+		char ch = sc.next().charAt(0);
+		Connection c = null;
+		
+		switch (ch) {
+		case 'a':
+			
+			try {
+				
+				c = getConnection();
+				
+				PreparedStatement ps = c.prepareStatement("UPDATE emp SET name=? WHERE id=?");
+				
+				System.out.println("Enter the new Name");
+				String name = sc.next();
+				ps.setString(1, name);
+				
+				System.out.println("Enter the Employe ID");
+				int id = sc.nextInt();
+				ps.setInt(2, id);
+				
+				ps.execute();
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					c.close();
+					System.out.println("Employe updated successfully");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			break;
+		case 'b':
+			
+			try {
+				
+				c = getConnection();
+				
+				System.out.println("Enter the new Salary");
+				int salary = sc.nextInt();
+				
+
+				System.out.println("Enter the Employe ID");
+				int id = sc.nextInt();
+				
+				PreparedStatement ps = c.prepareStatement("UPDATE emp SET salary=? WHERE id=?");
+				
+				ps.setInt(1, salary);
+				ps.setInt(2, id);
+//				System.out.println("et1");
+				ps.execute();
+//				System.out.println("et2");
+				
+			} catch (Exception e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					c.close();
+					System.out.println("Employe updated successfully");
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+			break;
+
+		default:
+			break;
+		}
+		
+
+	}
+	
+	public static void deleteEmploye() {
+		
+		Connection c = getConnection();
+		
+		PreparedStatement ps;
+		
+		try {
+			ps = c.prepareStatement("DELETE from emp where id=?");
+			
+			System.out.println("Enter Employe Id to Delete");
+			int id = sc.nextInt();
+			
+			ps.setInt(1, id);
+			
+			ps.execute();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				c.close();
+				System.out.println("Employe deleted successfully");
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+	
+	public static void retriveEmployeData() {
+		
+		Connection c = getConnection();
+		
+		try {
+			PreparedStatement ps = c.prepareStatement("SELECT* from emp");
+			
+			ResultSet rs = ps.executeQuery();
+			
+			while(rs.next()){
+				System.out.println("-----------------------");
+				System.out.println(rs.getInt(1));
+				System.out.println(rs.getString(2));
+				System.out.println(rs.getInt(3));
+//				System.out.println(rs.getString(4));
+//				System.out.println(rs.getString(5));
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				c.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+	}
+
+}
